@@ -9,6 +9,7 @@ function App() {
   const [movies, setMovies] = useState([])
   const [searchKey, setSearchKey]= useState([])
   const [selectMovie, setSelectMovie] = useState({})
+  const [playTrailer, setPlayTrailer] = useState(false)
   const IMAGE_PATH = "https://image.tmdb.org/t/p/original/"
 
   const fetchMovies = async (searchKey) => {
@@ -42,8 +43,7 @@ function App() {
 
   const selectedMovie = async (movie) => {
     const data = await fetchMovie(movie.id)
-    console.log("Select movie", data)
-    setSelectMovie(movie)
+    setSelectMovie(data)
   }
 
   useEffect(() => {
@@ -69,14 +69,13 @@ const renderTrailer = () => {
     <YouTube
       videoId={trailer.key}
     />
-  )
-}
+  )}
+
 
   return (
     <div className='App'>
       <header className="header" style={{backgroundImage: `url('${IMAGE_PATH}${selectMovie.backdrop_path}')`}}>
         <div className='header-content'>
-          {selectedMovie.videos ? renderTrailer(): null}
           <img src='./Logo.svg' />
           <form onSubmit={searchMovies}>
               <input type="text" onChange={(e => setSearchKey(e.target.value))}/>
@@ -89,13 +88,15 @@ const renderTrailer = () => {
           
         </div>
         <div className='Hero'>
+           
           <h1>{selectMovie.title}</h1>
           <div className='rating'>
             <span><img src="./src/assets/imdb.svg"/><p>{selectMovie.vote_average}/10</p></span>
             <span><img src="./src/assets/rot.svg"/><p>97%</p></span>
           </div>
+          {selectedMovie.videos && playTrailer ? renderTrailer(): null}
           {selectMovie.overview ? <p>{selectMovie.overview}</p> : null}
-          <button className='trailer-button'><img src="./src/assets/button.svg"/></button>
+          <button className='trailer-button' onClick={()=> setPlayTrailer(true)}><img src="./src/assets/button.svg"/></button>
         </div>
 
       </header>

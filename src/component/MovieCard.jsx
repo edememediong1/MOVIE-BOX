@@ -18,7 +18,8 @@ MovieCard.propTypes = {
        poster_path: PropTypes.img// Define title as a required string prop
       // Other properties of the 'movie' object and their prop validations
     }).isRequired,
-    selectMovie: PropTypes.func.isRequired
+    selectMovie: PropTypes.func.isRequired,
+   
   };
 
 export default MovieCard;

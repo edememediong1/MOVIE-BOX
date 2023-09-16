@@ -7,7 +7,7 @@ import YouTube from 'react-youtube';
 function App() {
   const API_URL = "https://api.themoviedb.org/3/"
   const [movies, setMovies] = useState([])
-  const [searchKey, setSearchKey]= useState([])
+  const [searchKey, setSearchKey]= useState("")
   const [selectMovie, setSelectMovie] = useState({})
   const [playTrailer, setPlayTrailer] = useState(false)
   const IMAGE_PATH = "https://image.tmdb.org/t/p/original/"
@@ -22,7 +22,6 @@ function App() {
         } 
       }) 
     setMovies(results)
-    setSelectMovie(results[0])
     }
     catch(error){
       console.log("There's an error", error)
@@ -48,9 +47,15 @@ function App() {
 
   useEffect(() => {
     fetchMovies()
-  }, [])
+  },[])
 
-  const renderMovies = movies.map((movie) =>{
+
+  function limitMoviesTop10(movies) {
+    return movies.slice(0, 10);
+  }
+  
+
+  const renderMovies = limitMoviesTop10(movies).map((movie) =>{
     return(<MovieCard
       key={movie.id}
       movie={movie}
@@ -64,12 +69,13 @@ const searchMovies = (e) => {
 }
 
 const renderTrailer = () => {
-  const trailer = selectedMovie.videos.results.find(vid => vid.name === 'Official Trailer')
+  const trailer = movies.videos.results.find(vid => vid.name === 'Official Trailer')
   return (
     <YouTube
       videoId={trailer.key}
     />
   )}
+
 
 
   return (
@@ -88,15 +94,15 @@ const renderTrailer = () => {
           
         </div>
         <div className='Hero'>
-           
+          {selectedMovie.videos && playTrailer ? renderTrailer() :null}
           <h1>{selectMovie.title}</h1>
           <div className='rating'>
             <span><img src="./src/assets/imdb.svg"/><p>{selectMovie.vote_average}/10</p></span>
             <span><img src="./src/assets/rot.svg"/><p>97%</p></span>
           </div>
-          {selectedMovie.videos && playTrailer ? renderTrailer(): null}
+         
           {selectMovie.overview ? <p>{selectMovie.overview}</p> : null}
-          <button className='trailer-button' onClick={()=> setPlayTrailer(true)}><img src="./src/assets/button.svg"/></button>
+          <button className='trailer-button' onClick={() => {setPlayTrailer(true), console.log(selectedMovie.videos.results)}}><img src="./src/assets/button.svg"/></button>
         </div>
 
       </header>

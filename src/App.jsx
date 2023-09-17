@@ -10,6 +10,7 @@ function App() {
   const [movies, setMovies] = useState([]);
   const [searchKey, setSearchKey] = useState("");
   const [selectMovie, setSelectMovie] = useState({});
+  const [listNumber, setListNumber] = useState({ from: 0, to: 10 });
   const [playTrailer, setPlayTrailer] = useState(false);
   const IMAGE_PATH = "https://image.tmdb.org/t/p/original/";
 
@@ -26,9 +27,9 @@ function App() {
           },
         }
       );
-      selectMovie(results[0]);
       selectedMovie(results[0]);
       setMovies(results);
+      console.log(movies, selectMovie);
     } catch (error) {
       console.log("There's an error", error);
     }
@@ -53,13 +54,22 @@ function App() {
 
   useEffect(() => {
     fetchMovies();
-  });
+  }, [movies]);
 
-  function limitMoviesTop10(movies) {
-    return movies.slice(0, 10);
+  const paginate = () => {
+    setListNumber((prev) => {
+      return {
+        from: (prev.from += 10),
+        to: (prev.to += 10),
+      };
+    });
+  };
+
+  function limitMovies(movies) {
+    return movies.slice(listNumber.from, listNumber.to);
   }
 
-  const renderMovies = limitMoviesTop10(movies).map((movie) => {
+  const renderMovies = limitMovies(movies).map((movie) => {
     return (
       <MovieCard key={movie.id} movie={movie} selectMovie={selectedMovie} />
     );
@@ -89,7 +99,7 @@ function App() {
           <img src="./Logo.svg" />
           <form onSubmit={searchMovies}>
             <input type="text" onChange={(e) => setSearchKey(e.target.value)} />
-            <button type="submit">
+            <button type="submit" className="search-button">
               {" "}
               <i className="fa fa-search"></i>
             </button>
@@ -103,6 +113,7 @@ function App() {
         </div>
         <div className="Hero">
           {selectedMovie.videos && playTrailer ? renderTrailer() : null}
+          {/* <YouTube/> */}
           <h1>{selectMovie.title}</h1>
           <div className="rating">
             <span>
@@ -128,7 +139,7 @@ function App() {
       </header>
       <div className="feature-header">
         <h1>Featured Movies</h1>
-        <p>{`See more >`}</p>
+        <p onClick={() => paginate()}>{`See more >`}</p>
       </div>
 
       <div className="container">
